@@ -269,7 +269,7 @@ function Dashboard({ notify }: { notify: (message: string) => void }) {
               <CloudRain size={15} className="text-[#53ddc0]" />
               Light rain outside <span className="text-[#46545d]">/</span> humidity 61%
             </div>
-            <div className="mt-5 grid grid-cols-6 gap-1 border-y border-[#27343c] py-3">
+            <div className="forecast-grid mt-5 grid grid-cols-6 gap-1 border-y border-[#27343c] py-3">
               {forecast.map(({ day, temp, low, icon: Icon, current }) => (
                 <div key={day} className={`min-w-0 border-l border-[#27343c] px-2 first:border-l-0 ${current ? 'bg-[#c5ff32]/10 py-2' : 'py-1'}`}>
                   <div className={`font-mono text-[9px] ${current ? 'text-[#c5ff32]' : 'text-[#6d7b83]'}`}>{day}</div>

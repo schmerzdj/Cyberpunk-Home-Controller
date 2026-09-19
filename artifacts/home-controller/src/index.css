@@ -214,3 +214,58 @@
   .mobile-scroll-nav::-webkit-scrollbar { display: none; }
   .metric-value { font-size: 34px; }
 }
+
+/* The JC4827W543 is 480x272 native, or 272x480 when mounted in portrait.
+   Keep the compact breakpoint focused on the actual wall-panel canvas rather
+   than treating it like a phone-sized viewport. */
+@media (max-width: 359px) and (max-height: 600px) {
+  html, body, #root { width: 100%; max-width: 100%; min-width: 0; overflow-x: hidden; }
+  body { font-size: 11px; }
+  .hc-shell, .hc-main, .hc-content { width: 100%; max-width: 100%; min-width: 0; }
+  .hc-sidebar > div:first-child { padding: 9px 10px 8px; }
+  .hc-sidebar > div:first-child a { gap: 8px; }
+  .hc-sidebar > div:first-child a > div:first-child { width: 27px; height: 27px; }
+  .hc-sidebar > div:first-child a > div:first-child svg { width: 12px; height: 12px; }
+  .hc-sidebar > div:first-child a > div:last-child > div:first-child { font-size: 13px; }
+  .hc-sidebar > div:first-child a > div:last-child > div:last-child { font-size: 7px; letter-spacing: .1em; }
+  .mobile-scroll-nav { gap: 2px; padding: 0 8px 7px; }
+  .mobile-scroll-nav .nav-item { gap: 5px; padding: 6px 8px; font-size: 10px; }
+  .mobile-scroll-nav .nav-item svg { width: 13px; height: 13px; }
+  .hc-main > header { padding: 7px 10px; min-height: 37px; }
+  .hc-main > header { position: relative; }
+  .hc-main > header > div:first-child { gap: 5px; min-width: 0; }
+  .hc-main > header > div:first-child { padding-right: 86px; }
+  .hc-main > header > div:first-child .tech-label { font-size: 8px; }
+  .hc-main > header > div:first-child .font-display { font-size: 10px; }
+  .hc-main > header > div:last-child { position: absolute; top: 7px; right: 8px; gap: 6px; }
+  .hc-main > header > div:last-child > div:first-child { font-size: 8px; }
+  .hc-main > header > div:last-child > div:first-child > div:last-child { font-size: 10px; }
+  .hc-main > header > div:last-child button { display: none; }
+  .hc-main > header > div:last-child button { padding: 5px; }
+  .hc-content { padding: 9px 10px 48px !important; }
+  .hc-content > .mb-6 { gap: 5px; margin-bottom: 9px; padding-bottom: 8px; }
+  .hc-content > .mb-6 h1 { font-size: 25px; line-height: .95; }
+  .hc-content > .mb-6 p { margin-top: 4px; font-size: 10px; line-height: 1.25; }
+  .hc-content .panel { padding: 10px !important; }
+  .hc-content .tech-label { font-size: 8px; letter-spacing: .12em; }
+  .hc-content .metric-value { font-size: 29px; }
+  .hc-content .forecast-grid { width: 100% !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0; margin-top: 10px; padding: 6px 0; }
+  .hc-content .forecast-grid > div { padding: 5px 6px; }
+  .hc-content .forecast-grid > div:nth-child(n+4) { border-top: 1px solid #27343c; }
+  .hc-content .forecast-grid .font-display { font-size: 15px; }
+  .hc-content .forecast-grid > div:first-child .font-display { font-size: 18px; }
+  .hc-content .forecast-grid svg { width: 13px; height: 13px; margin: 3px 0; }
+  .hc-content .forecast-grid > div:first-child svg { width: 16px; height: 16px; }
+  .hc-content .forecast-grid .font-mono { font-size: 7px; }
+  .hc-content .signal-line { margin: 10px 0; }
+  .hc-content .grid-cols-3 { gap: 6px; }
+  .hc-content .grid-cols-3 .text-sm { font-size: 11px; }
+  .hc-content .grid-cols-3 .font-mono { font-size: 7px; }
+  .hc-content .mt-7 { margin-top: 10px; }
+  .hc-content .mt-5 { margin-top: 10px; }
+  .hc-content .mt-4 { margin-top: 9px; }
+  .hc-content .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 4px; }
+  .hc-content .space-y-2 button { padding: 8px; }
+  .hc-content .status-dot { width: 5px; height: 5px; }
+  .hc-content .font-display.text-3xl { font-size: 25px; }
+}
