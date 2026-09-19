@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Cyberpunk Home Controller"
+description = "A portrait-first smart wall controller for the JC4827W543, with a cyberpunk home dashboard, weather, thermostat, lighting, blinds, cameras, automations, device management, themes, standby settings, and OTA readiness."
+version = "1.0.0"
+id = "artifacts/home-controller"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24859
+
+[services.development]
+run = "pnpm --filter @workspace/home-controller run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/home-controller", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/home-controller/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24859"
+BASE_PATH = "/"

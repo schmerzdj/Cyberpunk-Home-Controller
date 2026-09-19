@@ -1,6 +1,6 @@
-# [Project name]
+# Cyberpunk Home Controller
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Portrait-first smart home control surface for the JC4827W543 wall panel.
 
 ## Run & Operate
 
@@ -22,23 +22,30 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/home-controller/src/App.tsx` — routed controller screens and local interaction state
+- `artifacts/home-controller/src/index.css` — cyberpunk instrument-panel visual system
+- `artifacts/home-controller/package.json` — frontend artifact scripts and dependencies
+- `artifacts/api-server` — shared API service reserved for Home Assistant/device integrations
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The first build is frontend-first with local state so the wall-panel interaction model can be evaluated before hardware protocols are chosen.
+- The UI is portrait-first for the JC4827W543, while retaining a desktop layout for development and configuration.
+- Device pages are separated by domain so future Home Assistant/MQTT adapters can map cleanly to lights, blinds, cameras, sensors, and automations.
+- OTA, standby, PIR/proximity, and photoelectric concepts are exposed in Settings as the panel control surface for later firmware integration.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The controller provides overview weather and comfort status, thermostat/heater controls, scene and lamp controls, blind groups, calendar, security camera status, automations, device management, themes/display settings, sensor toggles, and OTA readiness.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- The requested first visual direction is a futuristic cyberpunk instrument-panel UI.
+- The hardware target is a JC4827W543 used in portrait mode.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- App state is intentionally local sample state in the first build; connect persistence and device APIs only after the target Home Assistant/MQTT bridge is selected.
 
 ## Pointers
 
