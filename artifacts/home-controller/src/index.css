@@ -207,12 +207,99 @@
     repeating-linear-gradient(0deg, #16222a 0, #16222a 2px, #17262c 3px, #17262c 4px);
 }
 
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.widget-shell { min-width: 0; position: relative; }
+.widget-span-1 { grid-column: span 1; }
+.widget-span-2 { grid-column: span 2; }
+.widget-span-full { grid-column: 1 / -1; }
+.overview-grid.editing .widget-shell {
+  outline: 1px dashed rgba(197, 255, 50, .42);
+  outline-offset: 4px;
+}
+.widget-shell.dragging { opacity: .45; }
+.widget-controls {
+  position: absolute;
+  z-index: 5;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid #465b43;
+  background: rgba(12, 18, 22, .96);
+  color: #c5ff32;
+  font-family: var(--app-font-mono);
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+.widget-controls button {
+  display: grid;
+  min-width: 21px;
+  min-height: 21px;
+  place-items: center;
+  border: 1px solid #2b3b42;
+  color: #a6b4ae;
+}
+.widget-controls button:hover { border-color: #c5ff32; color: #c5ff32; }
+.widget-drag-label { display: flex; align-items: center; gap: 2px; padding: 0 3px; color: #718179; }
+.layout-edit-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #35434b;
+  padding: 8px 10px;
+  color: #aab6b5;
+  font-family: var(--app-font-mono);
+  font-size: 10px;
+}
+.layout-edit-button:hover, .layout-edit-button.active { border-color: #c5ff32; color: #c5ff32; }
+.layout-toolbar { border-color: #465b43; }
+.widget-add-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #35434b;
+  padding: 6px 8px;
+  color: #c4d0c9;
+  font-family: var(--app-font-mono);
+  font-size: 9px;
+}
+.widget-add-button:hover { border-color: #c5ff32; color: #c5ff32; }
+.momentary-button {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid #33444b;
+  color: #a5b3ad;
+  font-family: var(--app-font-mono);
+  font-size: 9px;
+  touch-action: none;
+  user-select: none;
+}
+.momentary-button:hover, .momentary-button.active {
+  border-color: #c5ff32;
+  background: rgba(197, 255, 50, .12);
+  color: #c5ff32;
+}
+.momentary-button:disabled { cursor: not-allowed; opacity: .42; }
+
 @media (max-width: 767px) {
   .hc-shell { background-size: auto, 26px 26px, 26px 26px, auto; }
   .hc-sidebar { border-right: 0; border-bottom: 1px solid #26303a; }
   .mobile-scroll-nav { overflow-x: auto; scrollbar-width: none; }
   .mobile-scroll-nav::-webkit-scrollbar { display: none; }
   .metric-value { font-size: 34px; }
+}
+
+@media (min-width: 768px) {
+  .overview-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
 /* The JC4827W543 is 480x272 native, or 272x480 when mounted in portrait.
@@ -268,4 +355,11 @@
   .hc-content .space-y-2 button { padding: 8px; }
   .hc-content .status-dot { width: 5px; height: 5px; }
   .hc-content .font-display.text-3xl { font-size: 25px; }
+  .overview-grid { gap: 10px; }
+  .widget-controls { top: 4px; right: 4px; }
+  .widget-controls button { min-width: 19px; min-height: 19px; }
+  .widget-drag-label { display: none; }
+  .layout-toolbar { font-size: 9px; }
+  .layout-toolbar .widget-add-button { padding: 5px 6px; }
+  .momentary-button { min-height: 28px; font-size: 8px; }
 }

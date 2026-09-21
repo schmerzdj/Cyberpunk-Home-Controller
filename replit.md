@@ -33,10 +33,11 @@ Portrait-first smart home control surface for the JC4827W543 wall panel.
 - The UI is portrait-first for the JC4827W543, while retaining a desktop layout for development and configuration.
 - Device pages are separated by domain so future Home Assistant/MQTT adapters can map cleanly to lights, blinds, cameras, sensors, and automations.
 - OTA, standby, PIR/proximity, and photoelectric concepts are exposed in Settings as the panel control surface for later firmware integration.
+- The Overview uses a responsive 4-column portrait / 6-column wider widget grid; edit mode supports adding, removing, resizing, and reordering local widgets.
 
 ## Product
 
-The controller provides overview weather and comfort status, thermostat/heater controls, scene and lamp controls, blind groups, calendar, security camera status, automations, device management, themes/display settings, sensor toggles, and OTA readiness.
+The controller provides overview weather and comfort status, thermostat/heater controls, scene and lamp controls, momentary roller-blind controls, calendar, security camera status, automations, device management, themes/display settings, sensor toggles, OTA readiness, and local preview pages for X, Facebook, YouTube, and Gmail.
 
 ## User preferences
 
