@@ -64,6 +64,7 @@ import { SocialPage as EnhancedSocialPage } from '@/components/social-page';
 import { useLiveSensors } from '@/hooks/use-live-sensors';
 import { Sparkline } from '@/components/sparkline';
 import { PresenceRadar } from '@/components/presence-radar';
+import { InstallerPage } from '@/components/installer-page';
 
 const queryClient = new QueryClient();
 
@@ -77,11 +78,12 @@ const navItems: NavItem[] = [
   { href: '/cameras', label: 'Cameras', icon: Camera, code: '04' },
   { href: '/automations', label: 'Automations', icon: Zap, code: '05' },
   { href: '/devices', label: 'Devices', icon: Cpu, code: '06' },
-  { href: '/settings', label: 'Settings', icon: Settings2, code: '07' },
-  { href: '/x', label: 'X', icon: X, code: '08' },
-  { href: '/facebook', label: 'Facebook', icon: Facebook, code: '09' },
-  { href: '/youtube', label: 'YouTube', icon: Youtube, code: '10' },
-  { href: '/gmail', label: 'Gmail', icon: Mail, code: '11' },
+  { href: '/install', label: 'Install', icon: Download, code: '07' },
+  { href: '/settings', label: 'Settings', icon: Settings2, code: '08' },
+  { href: '/x', label: 'X', icon: X, code: '09' },
+  { href: '/facebook', label: 'Facebook', icon: Facebook, code: '10' },
+  { href: '/youtube', label: 'YouTube', icon: Youtube, code: '11' },
+  { href: '/gmail', label: 'Gmail', icon: Mail, code: '12' },
 ];
 
 function App() {
@@ -128,6 +130,7 @@ function Router() {
               <Route path="/cameras" component={() => <Cameras notify={notify} />} />
               <Route path="/automations" component={() => <Automations notify={notify} />} />
               <Route path="/devices" component={() => <Devices notify={notify} />} />
+              <Route path="/install" component={() => <InstallerPage notify={notify} />} />
               <Route path="/settings" component={() => <Settings notify={notify} />} />
               <Route path="/x" component={() => <EnhancedSocialPage platform="X" icon={X} notify={notify} />} />
               <Route path="/facebook" component={() => <EnhancedSocialPage platform="Facebook" icon={Facebook} notify={notify} />} />
@@ -158,7 +161,7 @@ function Sidebar({ location }: { location: string }) {
             <Radio size={16} />
           </div>
           <div>
-            <div className="font-display text-lg font-semibold tracking-[.08em] text-[#dfe8e4]">CYBER//HOME</div>
+            <div className="glitch-text font-display text-lg font-semibold tracking-[.08em] text-[#dfe8e4]" data-text="CYBER//HOME">CYBER//HOME</div>
             <div className="tech-label mt-0.5">WALL CONTROL / v2.4.1</div>
           </div>
         </Link>
@@ -243,7 +246,7 @@ function PageHeading({ eyebrow, title, detail, action }: { eyebrow: string; titl
     <div className="mb-6 flex flex-col justify-between gap-4 border-b border-[#29343d] pb-5 sm:flex-row sm:items-end">
       <div>
         <div className="mb-2 flex items-center gap-2 tech-label"><span className="status-dot" />{eyebrow}</div>
-        <h1 className="font-display text-4xl tracking-[.04em] text-[#e1e9e3] sm:text-5xl">{title}</h1>
+        <h1 className="glitch-text font-display text-4xl tracking-[.04em] text-[#e1e9e3] sm:text-5xl" data-text={title}>{title}</h1>
         <p className="mt-2 max-w-xl text-sm text-[#7f8b94]">{detail}</p>
       </div>
       {action}
