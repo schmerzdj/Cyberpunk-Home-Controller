@@ -63,6 +63,7 @@ import { BottomNav } from '@/components/bottom-nav';
 import { SocialPage as EnhancedSocialPage } from '@/components/social-page';
 import { useLiveSensors } from '@/hooks/use-live-sensors';
 import { Sparkline } from '@/components/sparkline';
+import { PresenceRadar } from '@/components/presence-radar';
 
 const queryClient = new QueryClient();
 
@@ -263,6 +264,7 @@ const widgetCatalog: Array<{ id: string; label: string; detail: string; defaultS
   { id: 'thermostat', label: 'Thermostat', detail: 'Target temperature and heater relay', defaultSpan: 2 },
   { id: 'blinds', label: 'Blind controls', detail: 'Momentary up/down controls', defaultSpan: 'full' },
   { id: 'security', label: 'Security', detail: 'Camera and perimeter status', defaultSpan: 2 },
+  { id: 'presence', label: 'Presence radar', detail: 'Live occupancy and room locations', defaultSpan: 2 },
   { id: 'calendar', label: 'Next up', detail: 'Household schedule preview', defaultSpan: 2 },
   { id: 'platforms', label: 'Platform dock', detail: 'X, Facebook, YouTube, and Gmail', defaultSpan: 'full' },
 ];
@@ -280,6 +282,7 @@ function Dashboard({ notify }: { notify: (message: string) => void }) {
     { id: 'thermostat', span: 2 },
     { id: 'blinds', span: 'full' },
     { id: 'security', span: 2 },
+    { id: 'presence', span: 2 },
     { id: 'calendar', span: 2 },
     { id: 'platforms', span: 'full' },
   ]);
@@ -385,6 +388,9 @@ function Dashboard({ notify }: { notify: (message: string) => void }) {
     }
     if (id === 'security') {
       return <div className="panel p-5"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">SECURITY / LIVE</span>}>Camera pulse</SectionLabel><div className="flex items-center gap-3"><div className="camera-frame relative grid h-14 w-20 place-items-center border border-[#38505a]"><Eye size={17} className="text-[#53ddc0]" /><span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#e36b5a]" /></div><div><div className="text-sm text-[#d0dad4]">Front entry</div><div className="font-mono text-[10px] text-[#77858e]">No movement · 2 min ago</div></div><Link href="/cameras" className="ml-auto text-[#839097] hover:text-[#c5ff32]" data-testid="link-cameras-overview"><ArrowRight size={16} /></Link></div></div>;
+    }
+    if (id === 'presence') {
+      return <PresenceRadar />;
     }
     if (id === 'calendar') {
       return <div className="panel p-5"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">SCHEDULE / 02</span>}>Next up</SectionLabel><div className="flex items-center gap-3"><div className="grid h-9 w-9 place-items-center border border-[#35434b] text-[#c5ff32]"><Timer size={16} /></div><div><div className="text-sm text-[#d0dad4]">Blinds close</div><div className="font-mono text-[10px] text-[#77858e]">22:30 · lounge / kitchen</div></div></div><div className="mt-4 h-1 bg-[#0d1216]"><div className="h-full w-[72%] bg-[#c5ff32]" /></div></div>;
