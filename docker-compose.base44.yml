@@ -1,0 +1,55 @@
+services:
+  # One-shot dependency install shared across web and api via the bind mount.
+  setup:
+    image: node:22-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install -g pnpm@9 && pnpm install --store-dir /app/.pnpm-store"
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: home
+      POSTGRES_PASSWORD: home
+      POSTGRES_DB: home
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U home"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: node:22-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      - PORT=5000
+      - DATABASE_URL=postgresql://home:home@db:5432/home
+      - NODE_ENV=development
+    command: sh -c "npm install -g pnpm@9 && pnpm --filter @workspace/api-server run dev"
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+
+  web:
+    image: node:22-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      - PORT=3000
+      - BASE_PATH=/
+      - NODE_ENV=development
+      - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS
+    command: sh -c "npm install -g pnpm@9 && pnpm --filter @workspace/home-controller run dev"
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"

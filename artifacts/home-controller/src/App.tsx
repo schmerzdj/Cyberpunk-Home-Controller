@@ -59,6 +59,12 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+import { BottomNav } from '@/components/bottom-nav';
+import { SocialPage as EnhancedSocialPage } from '@/components/social-page';
+import { useLiveSensors } from '@/hooks/use-live-sensors';
+import { Sparkline } from '@/components/sparkline';
+import { PresenceRadar } from '@/components/presence-radar';
+import { InstallerPage } from '@/components/installer-page';
 
 const queryClient = new QueryClient();
 
@@ -72,11 +78,12 @@ const navItems: NavItem[] = [
   { href: '/cameras', label: 'Cameras', icon: Camera, code: '04' },
   { href: '/automations', label: 'Automations', icon: Zap, code: '05' },
   { href: '/devices', label: 'Devices', icon: Cpu, code: '06' },
-  { href: '/settings', label: 'Settings', icon: Settings2, code: '07' },
-  { href: '/x', label: 'X', icon: X, code: '08' },
-  { href: '/facebook', label: 'Facebook', icon: Facebook, code: '09' },
-  { href: '/youtube', label: 'YouTube', icon: Youtube, code: '10' },
-  { href: '/gmail', label: 'Gmail', icon: Mail, code: '11' },
+  { href: '/install', label: 'Install', icon: Download, code: '07' },
+  { href: '/settings', label: 'Settings', icon: Settings2, code: '08' },
+  { href: '/x', label: 'X', icon: X, code: '09' },
+  { href: '/facebook', label: 'Facebook', icon: Facebook, code: '10' },
+  { href: '/youtube', label: 'YouTube', icon: Youtube, code: '11' },
+  { href: '/gmail', label: 'Gmail', icon: Mail, code: '12' },
 ];
 
 function App() {
@@ -109,6 +116,7 @@ function Router() {
 
   return (
     <div className="hc-shell">
+      <BottomNav location={location} />
       <div className="grid min-h-[100dvh] md:grid-cols-[236px_1fr]">
         <Sidebar location={location} />
         <main className="hc-main">
@@ -122,15 +130,16 @@ function Router() {
               <Route path="/cameras" component={() => <Cameras notify={notify} />} />
               <Route path="/automations" component={() => <Automations notify={notify} />} />
               <Route path="/devices" component={() => <Devices notify={notify} />} />
+              <Route path="/install" component={() => <InstallerPage notify={notify} />} />
               <Route path="/settings" component={() => <Settings notify={notify} />} />
-              <Route path="/x" component={() => <SocialPage platform="X" icon={X} notify={notify} />} />
-              <Route path="/facebook" component={() => <SocialPage platform="Facebook" icon={Facebook} notify={notify} />} />
-              <Route path="/youtube" component={() => <SocialPage platform="YouTube" icon={Youtube} notify={notify} />} />
-              <Route path="/gmail" component={() => <SocialPage platform="Gmail" icon={Mail} notify={notify} />} />
+              <Route path="/x" component={() => <EnhancedSocialPage platform="X" icon={X} notify={notify} />} />
+              <Route path="/facebook" component={() => <EnhancedSocialPage platform="Facebook" icon={Facebook} notify={notify} />} />
+              <Route path="/youtube" component={() => <EnhancedSocialPage platform="YouTube" icon={Youtube} notify={notify} />} />
+              <Route path="/gmail" component={() => <EnhancedSocialPage platform="Gmail" icon={Mail} notify={notify} />} />
               <Route component={NotFound} />
             </Switch>
           </div>
-          <div className="pointer-events-none fixed bottom-4 left-1/2 z-30 -translate-x-1/2">
+          <div className="hc-status-feedback pointer-events-none fixed bottom-4 left-1/2 z-30 -translate-x-1/2">
             <div data-testid="status-feedback" className="flex items-center gap-2 border border-[#38464f] bg-[#111920]/95 px-3 py-2 font-mono text-[10px] tracking-[.1em] text-[#a8b5bc] shadow-2xl">
               <span className="status-dot" />
               {toastMessage}
@@ -152,7 +161,7 @@ function Sidebar({ location }: { location: string }) {
             <Radio size={16} />
           </div>
           <div>
-            <div className="font-display text-lg font-semibold tracking-[.08em] text-[#dfe8e4]">CYBER//HOME</div>
+            <div className="glitch-text font-display text-lg font-semibold tracking-[.08em] text-[#dfe8e4]" data-text="CYBER//HOME">CYBER//HOME</div>
             <div className="tech-label mt-0.5">WALL CONTROL / v2.4.1</div>
           </div>
         </Link>
@@ -237,7 +246,7 @@ function PageHeading({ eyebrow, title, detail, action }: { eyebrow: string; titl
     <div className="mb-6 flex flex-col justify-between gap-4 border-b border-[#29343d] pb-5 sm:flex-row sm:items-end">
       <div>
         <div className="mb-2 flex items-center gap-2 tech-label"><span className="status-dot" />{eyebrow}</div>
-        <h1 className="font-display text-4xl tracking-[.04em] text-[#e1e9e3] sm:text-5xl">{title}</h1>
+        <h1 className="glitch-text font-display text-4xl tracking-[.04em] text-[#e1e9e3] sm:text-5xl" data-text={title}>{title}</h1>
         <p className="mt-2 max-w-xl text-sm text-[#7f8b94]">{detail}</p>
       </div>
       {action}
@@ -258,6 +267,7 @@ const widgetCatalog: Array<{ id: string; label: string; detail: string; defaultS
   { id: 'thermostat', label: 'Thermostat', detail: 'Target temperature and heater relay', defaultSpan: 2 },
   { id: 'blinds', label: 'Blind controls', detail: 'Momentary up/down controls', defaultSpan: 'full' },
   { id: 'security', label: 'Security', detail: 'Camera and perimeter status', defaultSpan: 2 },
+  { id: 'presence', label: 'Presence radar', detail: 'Live occupancy and room locations', defaultSpan: 2 },
   { id: 'calendar', label: 'Next up', detail: 'Household schedule preview', defaultSpan: 2 },
   { id: 'platforms', label: 'Platform dock', detail: 'X, Facebook, YouTube, and Gmail', defaultSpan: 'full' },
 ];
@@ -275,11 +285,13 @@ function Dashboard({ notify }: { notify: (message: string) => void }) {
     { id: 'thermostat', span: 2 },
     { id: 'blinds', span: 'full' },
     { id: 'security', span: 2 },
+    { id: 'presence', span: 2 },
     { id: 'calendar', span: 2 },
     { id: 'platforms', span: 'full' },
   ]);
   const [blindPositions, setBlindPositions] = useState([35, 62, 48]);
   const [movingBlind, setMovingBlind] = useState<{ index: number; direction: 'up' | 'down' } | null>(null);
+  const liveSensors = useLiveSensors();
   const scenes = [
     { name: 'Night mode', detail: 'Soft perimeter lighting', icon: Moon },
     { name: 'Focus', detail: 'Cool work light', icon: Gauge },
@@ -360,25 +372,28 @@ function Dashboard({ notify }: { notify: (message: string) => void }) {
         <div className="absolute right-5 top-5 tech-label">21 JUN / 21:47</div>
         <div className="scan-line">
           <div className="tech-label">Environmental readout / living level</div>
-          <div className="mt-4 flex items-end gap-3"><span className="metric-value text-[#e4ede6]" data-testid="text-home-temperature">22.6°</span><span className="mb-1 font-mono text-xs text-[#819098]">CELSIUS / COMFORT BAND</span></div>
-          <div className="mt-2 flex items-center gap-3 text-xs text-[#7f8b94]"><CloudRain size={15} className="text-[#53ddc0]" />Light rain outside <span className="text-[#46545d]">/</span> humidity 61%</div>
+          <div className="mt-4 flex items-end gap-3"><span className="metric-value text-[#e4ede6]" data-testid="text-home-temperature">{liveSensors.temperature.toFixed(1)}°</span><span className="mb-1 font-mono text-xs text-[#819098]">CELSIUS / COMFORT BAND</span><Sparkline data={liveSensors.history} /></div>
+          <div className="mt-2 flex items-center gap-3 text-xs text-[#7f8b94]"><CloudRain size={15} className="text-[#53ddc0]" />Light rain outside <span className="text-[#46545d]">/</span> humidity {Math.round(liveSensors.humidity)}%</div>
           <div className="forecast-grid mt-5 grid grid-cols-6 gap-1 border-y border-[#27343c] py-3">{forecast.map(({ day, temp, low, icon: Icon, current }) => <div key={day} className={`min-w-0 border-l border-[#27343c] px-2 first:border-l-0 ${current ? 'bg-[#c5ff32]/10 py-2' : 'py-1'}`}><div className={`font-mono text-[9px] ${current ? 'text-[#c5ff32]' : 'text-[#6d7b83]'}`}>{day}</div><Icon size={current ? 18 : 14} className={`my-2 ${current ? 'text-[#53ddc0]' : 'text-[#9aa8a6]'}`} /><div className={`font-display ${current ? 'text-xl text-[#e3ede5]' : 'text-sm text-[#c8d2cc]'}`}>{temp}</div><div className="font-mono text-[9px] text-[#68767e]">{low} / LOW</div></div>)}</div>
         </div>
         <div className="my-6 signal-line" />
-        <div className="grid grid-cols-3 gap-3"><Metric icon={Thermometer} label="Inside" value="22.6°" detail="stable" /><Metric icon={Wind} label="Air quality" value="Good" detail="CO₂ 604 ppm" accent="cyan" /><Metric icon={ShieldCheck} label="Security" value="Armed" detail="all zones clear" /></div>
+        <div className="grid grid-cols-3 gap-3"><Metric icon={Thermometer} label="Inside" value={`${liveSensors.temperature.toFixed(1)}°`} detail="stable" /><Metric icon={Wind} label="Air quality" value="Good" detail={`CO₂ ${Math.round(liveSensors.co2)} ppm`} accent="cyan" /><Metric icon={ShieldCheck} label="Security" value="Armed" detail="all zones clear" /></div>
       </div>;
     }
     if (id === 'scenes') {
       return <div className="panel p-5 sm:p-6"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">LOCAL PRESETS</span>}>Scene launcher</SectionLabel><div className="space-y-2">{scenes.map(({ name, detail, icon: Icon }) => <button key={name} onClick={() => { setScene(name); notify(`SCENE LOADED · ${name.toUpperCase()}`); }} data-testid={`button-scene-${name.toLowerCase().replace(' ', '-')}`} className={`group flex w-full items-center gap-3 border p-3 text-left transition ${scene === name ? 'border-[#a9da36] bg-[#c5ff32]/10' : 'border-[#2b3840] hover:border-[#54636c]'}`}><div className={`grid h-8 w-8 place-items-center border ${scene === name ? 'border-[#c5ff32] text-[#c5ff32]' : 'border-[#37454e] text-[#829099]'}`}><Icon size={15} /></div><span className="min-w-0 flex-1"><span className="block text-sm text-[#d1dbd6]">{name}</span><span className="block font-mono text-[9px] text-[#6f7c84]">{detail}</span></span>{scene === name ? <Check size={14} className="text-[#c5ff32]" /> : <ChevronRight size={14} className="text-[#596771]" />}</button>)}</div><div className="mt-5 flex items-center justify-between border-t border-[#27333c] pt-4"><div><div className="text-sm text-[#cdd8d1]">Perimeter lighting</div><div className="font-mono text-[9px] text-[#6f7b83]">Lounge + hall circuit</div></div><button className={`switch ${lights ? 'on' : ''}`} onClick={() => { setLights(!lights); notify(`PERIMETER LIGHTS · ${!lights ? 'ON' : 'OFF'}`); }} data-testid="switch-perimeter-lights" aria-label="Toggle perimeter lighting" /></div></div>;
     }
     if (id === 'thermostat') {
-      return <div className="panel p-5 sm:p-6"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">HEAT / RELAY 01</span>}>Thermostat</SectionLabel><div className="flex items-center justify-between gap-3"><div><div className="font-display text-3xl text-[#e2ece4]">{setPoint}°</div><div className="font-mono text-[9px] text-[#718089]">TARGET / INSIDE 22.6°</div></div><button className={`switch ${heater ? 'on' : ''}`} onClick={() => { setHeater(!heater); notify(`HEATER RELAY · ${!heater ? 'ON' : 'OFF'}`); }} data-testid="switch-heater" aria-label="Toggle heater" /></div><input className="mt-4 w-full accent-[#c5ff32]" type="range" min="16" max="28" value={setPoint} onChange={(event) => setSetPoint(Number(event.target.value))} aria-label="Thermostat set temperature" data-testid="input-thermostat-setpoint" /><div className="mt-2 flex justify-between font-mono text-[9px] text-[#68767e]"><span>16° ECO</span><span className={heater ? 'text-[#c5ff32]' : 'text-[#68767e]'}>{heater ? 'RELAY ACTIVE' : 'RELAY STANDBY'}</span><span>28° MAX</span></div></div>;
+      return <div className="panel p-5 sm:p-6"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">HEAT / RELAY 01</span>}>Thermostat</SectionLabel><div className="flex items-center justify-between gap-3"><div><div className="font-display text-3xl text-[#e2ece4]">{setPoint}°</div><div className="font-mono text-[9px] text-[#718089]">TARGET / INSIDE {liveSensors.temperature.toFixed(1)}°</div></div><button className={`switch ${heater ? 'on' : ''}`} onClick={() => { setHeater(!heater); notify(`HEATER RELAY · ${!heater ? 'ON' : 'OFF'}`); }} data-testid="switch-heater" aria-label="Toggle heater" /></div><input className="mt-4 w-full accent-[#c5ff32]" type="range" min="16" max="28" value={setPoint} onChange={(event) => setSetPoint(Number(event.target.value))} aria-label="Thermostat set temperature" data-testid="input-thermostat-setpoint" /><div className="mt-2 flex justify-between font-mono text-[9px] text-[#68767e]"><span>16° ECO</span><span className={heater ? 'text-[#c5ff32]' : 'text-[#68767e]'}>{heater ? 'RELAY ACTIVE' : 'RELAY STANDBY'}</span><span>28° MAX</span></div></div>;
     }
     if (id === 'blinds') {
       return <div className="panel p-5 sm:p-6"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">HOLD TO MOVE</span>}>Roller blinds</SectionLabel><div className="grid gap-2 sm:grid-cols-3">{['Back door', 'Lounge', 'Kitchen'].map((name, index) => <div key={name} className="border border-[#2b3942] bg-[#111920] p-3"><div className="flex items-center justify-between"><div><div className="text-sm text-[#d6dfd9]">{name}</div><div className="font-mono text-[9px] text-[#6e7b84]">MOTOR {String(index + 1).padStart(2, '0')}</div></div><span className="font-display text-xl text-[#d9e4dd]">{blindPositions[index]}%</span></div><div className="blind-track mt-3"><div className="blind-fill" style={{ width: `${blindPositions[index]}%` }} /></div><div className="mt-3 grid grid-cols-2 gap-2"><button className={`momentary-button ${movingBlind?.index === index && movingBlind.direction === 'up' ? 'active' : ''}`} onPointerDown={() => startBlind(index, 'up')} onPointerUp={stopBlind} onPointerCancel={stopBlind} onPointerLeave={stopBlind} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && !event.repeat) startBlind(index, 'up'); }} onKeyUp={stopBlind} onBlur={stopBlind} disabled={editing} data-testid={`button-overview-blind-up-${index}`} aria-label={`Hold to raise ${name}`}><ChevronUp size={14} />UP</button><button className={`momentary-button ${movingBlind?.index === index && movingBlind.direction === 'down' ? 'active' : ''}`} onPointerDown={() => startBlind(index, 'down')} onPointerUp={stopBlind} onPointerCancel={stopBlind} onPointerLeave={stopBlind} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && !event.repeat) startBlind(index, 'down'); }} onKeyUp={stopBlind} onBlur={stopBlind} disabled={editing} data-testid={`button-overview-blind-down-${index}`} aria-label={`Hold to lower ${name}`}><ChevronDown size={14} />DOWN</button></div></div>)}</div></div>;
     }
     if (id === 'security') {
       return <div className="panel p-5"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">SECURITY / LIVE</span>}>Camera pulse</SectionLabel><div className="flex items-center gap-3"><div className="camera-frame relative grid h-14 w-20 place-items-center border border-[#38505a]"><Eye size={17} className="text-[#53ddc0]" /><span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#e36b5a]" /></div><div><div className="text-sm text-[#d0dad4]">Front entry</div><div className="font-mono text-[10px] text-[#77858e]">No movement · 2 min ago</div></div><Link href="/cameras" className="ml-auto text-[#839097] hover:text-[#c5ff32]" data-testid="link-cameras-overview"><ArrowRight size={16} /></Link></div></div>;
+    }
+    if (id === 'presence') {
+      return <PresenceRadar />;
     }
     if (id === 'calendar') {
       return <div className="panel p-5"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">SCHEDULE / 02</span>}>Next up</SectionLabel><div className="flex items-center gap-3"><div className="grid h-9 w-9 place-items-center border border-[#35434b] text-[#c5ff32]"><Timer size={16} /></div><div><div className="text-sm text-[#d0dad4]">Blinds close</div><div className="font-mono text-[10px] text-[#77858e]">22:30 · lounge / kitchen</div></div></div><div className="mt-4 h-1 bg-[#0d1216]"><div className="h-full w-[72%] bg-[#c5ff32]" /></div></div>;
@@ -516,25 +531,6 @@ function Settings({ notify }: { notify: (message: string) => void }) {
       <div className="panel p-5 sm:p-6"><SectionLabel right={<Monitor size={14} className="text-[#c5ff32]" />}>Display behavior</SectionLabel><SettingsRow title="Standby after inactivity" detail="Panel dims after 90 seconds" value={standby} onClick={() => { setStandby(!standby); notify(`STANDBY TIMER · ${!standby ? 'ENABLED' : 'DISABLED'}`); }} testId="switch-standby" /><SettingsRow title="Wake on proximity" detail="Use the front sensor to wake" value={sensors} onClick={() => { setSensors(!sensors); notify(`PROXIMITY SENSOR · ${!sensors ? 'ACTIVE' : 'PAUSED'}`); }} testId="switch-proximity" /><SettingsRow title="Touch feedback" detail="Subtle haptic pulse on input" value={true} onClick={() => notify('TOUCH FEEDBACK · CALIBRATED')} testId="switch-touch-feedback" /><div className="mt-5 border-t border-[#2a3740] pt-5"><div className="tech-label">Standby clock</div><div className="segmented mt-3 grid grid-cols-3">{['Minimal', 'Time + weather', 'Off'].map((mode, index) => <button key={mode} className={`py-2 font-mono text-[9px] ${index === 1 ? 'active' : ''}`} onClick={() => notify(`STANDBY CLOCK · ${mode.toUpperCase()}`)} data-testid={`button-standby-${index}`}>{mode}</button>)}</div></div></div>
       <div className="panel p-5 sm:p-6"><SectionLabel right={<ShieldCheck size={14} className="text-[#c5ff32]" />}>Sensors & privacy</SectionLabel><div className="grid gap-3 sm:grid-cols-2"><SensorTile icon={Thermometer} title="Temperature" value="22.6°C" /><SensorTile icon={Wind} title="Air quality" value="Good" /><SensorTile icon={Eye} title="Presence" value={sensors ? 'Detected' : 'Paused'} /><SensorTile icon={Volume2} title="Noise floor" value="31 dB" /></div><button className="mt-5 flex w-full items-center justify-center gap-2 border border-[#35434b] py-2 font-mono text-[10px] text-[#aab6b5] hover:border-[#c5ff32] hover:text-[#c5ff32]" onClick={() => notify('SENSOR CALIBRATION · BASELINE UPDATED')} data-testid="button-calibrate-sensors"><RefreshCw size={14} />CALIBRATE SENSORS</button></div>
       <div className="panel p-5 sm:p-6"><SectionLabel right={<Download size={14} className="text-[#c5ff32]" />}>Firmware & OTA</SectionLabel><div className="flex items-start gap-4 border border-[#33443d] bg-[#12201c] p-4"><div className="grid h-10 w-10 place-items-center border border-[#4a672d] text-[#c5ff32]"><Check size={18} /></div><div><div className="text-sm text-[#d3ded7]">System is up to date</div><div className="mt-1 font-mono text-[10px] text-[#718179]">CYBER//HOME OS 2.4.1 · build 8942</div></div></div><div className="mt-5 flex items-center justify-between font-mono text-[10px] text-[#6f7d85]"><span>Last check</span><span className="text-[#bdc9c2]">Today, 20:04</span></div><button className="mt-4 flex w-full items-center justify-center gap-2 border border-[#35434b] py-2.5 font-mono text-[10px] text-[#aab6b5] hover:border-[#c5ff32] hover:text-[#c5ff32]" onClick={() => notify('OTA SERVICE · NO NEW PACKAGE FOUND')} data-testid="button-check-updates"><RefreshCw size={14} />CHECK FOR UPDATES</button></div>
-    </div>
-  </>;
-}
-
-function SocialPage({ platform, icon: Icon, notify }: { platform: 'X' | 'Facebook' | 'YouTube' | 'Gmail'; icon: LucideIcon; notify: (message: string) => void }) {
-  const content = {
-    X: { eyebrow: 'X / Signal stream', title: 'X feed', detail: 'A quick social readout for the wall panel.', items: ['Home automation release notes', 'Local weather watch', 'Saved thread · weekend projects'] },
-    Facebook: { eyebrow: 'Facebook / Household', title: 'Facebook', detail: 'Household updates and shared community signals.', items: ['Mira shared a new photo', 'Neighbourhood watch · 2 new posts', 'Family group · dinner plans'] },
-    YouTube: { eyebrow: 'YouTube / Media queue', title: 'YouTube', detail: 'Your watch queue, ready for the lounge display.', items: ['Ambient cyberpunk workspace', 'Weekend repair guide', 'Saved · smart home setup'] },
-    Gmail: { eyebrow: 'Gmail / Inbox signal', title: 'Gmail', detail: 'Important messages surfaced without leaving the controller.', items: ['Delivery update · arriving tomorrow', 'Energy provider · monthly statement', 'School calendar · next week'] },
-  }[platform];
-  return <>
-    <PageHeading eyebrow={content.eyebrow} title={content.title} detail={content.detail} action={<button className="flex items-center gap-2 border border-[#35434b] px-3 py-2 font-mono text-[10px] text-[#aab6b5] hover:border-[#c5ff32] hover:text-[#c5ff32]" onClick={() => notify(`${platform.toUpperCase()} · REFRESH REQUESTED`)} data-testid={`button-refresh-${platform.toLowerCase()}`}><RefreshCw size={14} />REFRESH</button>} />
-    <div className="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
-      <div className="panel overflow-hidden">
-        <div className="flex items-center gap-3 border-b border-[#29363e] p-5"><div className="grid h-10 w-10 place-items-center border border-[#465b43] text-[#c5ff32]"><Icon size={19} /></div><div><div className="text-sm text-[#d8e3dc]">Local preview / {platform}</div><div className="font-mono text-[9px] text-[#718089]">ACCOUNT LINK READY · AUTH NOT CONNECTED</div></div><span className="ml-auto status-dot" /></div>
-        <div className="divide-y divide-[#27343c]">{content.items.map((item, index) => <button key={item} className="flex w-full items-center gap-3 p-4 text-left hover:bg-[#c5ff32]/5" onClick={() => notify(`${platform.toUpperCase()} · OPENED ITEM ${String(index + 1).padStart(2, '0')}`)} data-testid={`button-${platform.toLowerCase()}-item-${index}`}><span className="font-mono text-[9px] text-[#c5ff32]">{String(index + 1).padStart(2, '0')}</span><span className="min-w-0 flex-1"><span className="block text-sm text-[#d2ddd6]">{item}</span><span className="mt-1 block font-mono text-[9px] text-[#6f7d85]">{platform === 'Gmail' ? 'INBOX / TODAY' : 'LOCAL CACHE / RECENT'}</span></span><ChevronRight size={15} className="text-[#67767e]" /></button>)}</div>
-      </div>
-      <div className="panel p-5"><SectionLabel right={<span className="font-mono text-[9px] text-[#53616b]">INTEGRATION</span>}>Connection status</SectionLabel><div className="border border-dashed border-[#3c4b53] bg-[#111920] p-5 text-center"><Icon size={25} className="mx-auto text-[#53ddc0]" /><div className="mt-3 text-sm text-[#d2ddd6]">Ready to connect</div><div className="mt-1 font-mono text-[9px] leading-relaxed text-[#6e7b84]">This page is a local controller surface. Connect the account integration to load live content.</div><button className="mt-5 border border-[#c5ff32] px-4 py-2 font-mono text-[10px] text-[#c5ff32] hover:bg-[#c5ff32] hover:text-[#111820]" onClick={() => notify(`${platform.toUpperCase()} · INTEGRATION SETUP REQUIRED`)} data-testid={`button-connect-${platform.toLowerCase()}`}>CONNECT ACCOUNT</button></div></div>
     </div>
   </>;
 }
